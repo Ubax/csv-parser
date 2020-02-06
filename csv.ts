@@ -9,7 +9,7 @@ export class CSVData {
 }
 
 export class CSVLoader {
-  private static split(data: string): Array<string[]> {
+  private static split(data: string): Array<Array<string>> {
     let parsed: Array<string[]> = [];
 
     let inString: boolean = false;
@@ -40,7 +40,22 @@ export class CSVLoader {
     let records: CSVRecord[] = [];
     let headers: string[] = [];
 
-    console.log(this.split(data));
+    let parsed = this.split(data);
+    headers = parsed[0];
+    parsed.shift();
+    let cells = parsed.map((row: string[]) => {
+      return row.map((x: string) => {
+        return new CSVCell(x);
+      });
+    });
+
+    for (let i = 0; i < cells.length; i++) {
+      let record = [];
+      for (let j = 0; j < cells[i].length; j++) {
+        record[headers[j]] = cells[i][j];
+      }
+      records.push(new CSVRecord(record));
+    }
 
     return new CSVData(records, headers);
   }
